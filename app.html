@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LensVault - Premium Photography</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --blur-amount: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .upload-section.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="file"] {
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text);
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .photo-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+        }
+
+        .photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+        }
+
+        .photo-card:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .photo-author {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Premium/Locked State */
+        .photo-card.locked .photo-img {
+            filter: blur(var(--blur-amount)) brightness(0.7);
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            z-index: 10;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 5;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            place-items: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: grid;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .pricing-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .pricing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .pricing-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .features {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .gallery { grid-template-columns: 1fr; }
+            .nav-controls { gap: 0.5rem; }
+            .btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            main { padding: 1rem; }
+            .modal { padding: 2rem 1.5rem; }
+        }
+
+        /* Loading Animation */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, #334155 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                📸 LensVault
+            </div>
+            <div class="nav-controls">
+                <div class="mode-toggle" id="modeToggleContainer">
+                    <span>User</span>
+                    <div class="toggle-switch" id="modeToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span>Mod</span>
+                </div>
+                <button class="btn btn-outline" id="uploadBtn" style="display: none;">
+                    ⬆️ Upload
+                </button>
+                <button class="btn btn-primary" id="subBtn">
+                    💎 Subscribe
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Capture the Extraordinary</h1>
+            <p>Discover stunning photography from creators worldwide. Unlock premium content with a subscription.</p>
+        </section>
+
+        <section class="upload-section" id="uploadSection">
+            <div class="upload-header">
+                <h3>Upload New Photo</h3>
+                <button class="btn btn-outline" id="closeUpload">✕ Close</button>
+            </div>
+            <form class="upload-form" id="uploadForm">
+                <div class="form-group">
+                    <label>Photo Title</label>
+                    <input type="text" id="photoTitle" placeholder="Enter photo title" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Image</label>
+                    <input type="file" id="photoFile" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="isPremium">
+                        <span>🔒 Make this premium (subscription required)</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">
+                    Publish Photo
+                </button>
+            </form>
+        </section>
+
+        <section class="gallery" id="gallery">
+            <!-- Photos injected here -->
+        </section>
+    </main>
+
+    <!-- Subscription Modal -->
+    <div class="modal-overlay" id="subModal">
+        <div class="modal">
+            <button class="modal-close" id="closeModal">✕</button>
+            <div class="modal-icon">🔐</div>
+            <h2>Premium Content Locked</h2>
+            <p>Subscribe to unlock high-resolution images, exclusive content, and support your favorite photographers.</p>
+            
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <span class="pricing-name">Pro Access</span>
+                    <div class="pricing-price">$9.99<span>/mo</span></div>
+                </div>
+                <ul class="features">
+                    <li>✓ Unlimited HD downloads</li>
+                    <li>✓ Premium collections access</li>
+                    <li>✓ No advertisements</li>
+                    <li>✓ Support creators directly</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;" id="payBtn">
+                💳 Subscribe Now
+            </button>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                Secure payment processing. Cancel anytime.
+            </p>
+        </div>
+    </div>
+
+    <!-- Payment Simulation Modal -->
+    <div class="modal-overlay" id="processModal">
+        <div class="modal">
+            <div class="modal-icon">💳</div>
+            <h2>Processing Payment...</h2>
+            <p>Please wait while we securely process your subscription.</p>
+            <div style="margin-top: 2rem; height: 4px; background: var(--bg-dark); border-radius: 2px; overflow: hidden;">
+                <div style="height: 100%; background: var(--primary); width: 0%; animation: process 2s ease-in-out forwards;"></div>
+            </div>
+            <style>
+                @keyframes process {
+                    0% { width: 0%; }
+                    100% { width: 100%; }
+                }
+            </style>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let isModerator = false;
+        let currentUser = null;
+        let photos = [
+            {
+                id: 1,
+                title: "Mountain Sunrise",
+                author: "Alex Chen",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%234f46e5' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E🏔️ Mountain Sunrise%3C/text%3E%3C/svg%3E",
+                premium: false,
+                authorType: 'user'
+            },
+            {
+                id: 2,
+                title: "Urban Nights",
+                author: "Sarah Mod",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%230f172a' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E🌃 Urban Nights%3C/text%3E%3C/svg%3E",
+                premium: true,
+                authorType: 'moderator'
+            },
+            {
+                id: 3,
+                title: "Ocean Waves",
+                author: "Mike Ross",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%230ea5e9' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E🌊 Ocean Waves%3C/text%3E%3C/svg%3E",
+                premium: false,
+                authorType: 'user'
+            },
+            {
+                id: 4,
+                title: "Golden Hour Portrait",
+                author: "Jessica Mod",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f59e0b' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E👤 Portrait Pro%3C/text%3E%3C/svg%3E",
+                premium: true,
+                authorType: 'moderator'
+            },
+            {
+                id: 5,
+                title: "Forest Mist",
+                author: "Tom Green",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%2310b981' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E🌲 Forest Mist%3C/text%3E%3C/svg%3E",
+                premium: false,
+                authorType: 'user'
+            },
+            {
+                id: 6,
+                title: "Neon Tokyo",
+                author: "Yuki Mod",
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23ec4899' width='400' height='300'/%3E%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' dy='10.5' font-weight='bold' x='50%25' y='50%25' text-anchor='middle'%3E🏮 Neon Dreams%3C/text%3E%3C/svg%3E",
+                premium: true,
+                authorType: 'moderator'
+            }
+        ];
+
+        // DOM Elements
+        const gallery = document.getElementById('gallery');
+        const modeToggle = document.getElementById('modeToggle');
+        const modeToggleContainer = document.getElementById('modeToggleContainer');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadSection = document.getElementById('uploadSection');
+        const closeUpload = document.getElementById('closeUpload');
+        const uploadForm = document.getElementById('uploadForm');
+        const subModal = document.getElementById('subModal');
+        const closeModal = document.getElementById('closeModal');
+        const subBtn = document.getElementById('subBtn');
+        const payBtn = document.getElementById('payBtn');
+        const processModal = document.getElementById('processModal');
+
+        // Initialize
+        renderGallery();
+
+        // Mode Toggle
+        modeToggleContainer.addEventListener('click', () => {
+            isModerator = !isModerator;
+            modeToggle.classList.toggle('active');
+            uploadBtn.style.display = isModerator ? 'block' : 'none';
+            uploadSection.classList.remove('active');
+            
+            // Update existing photos author type for demo
+            if (isModerator) {
+                currentUser = 'Moderator';
+            } else {
+                currentUser = 'User' + Math.floor(Math.random() * 1000);
+            }
+        });
+
+        // Upload Section Toggle
+        uploadBtn.addEventListener('click', () => {
+            uploadSection.classList.toggle('active');
+        });
+
+        closeUpload.addEventListener('click', () => {
+            uploadSection.classList.remove('active');
+        });
+
+        // Handle Upload
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('photoTitle').value;
+            const isPremium = document.getElementById('isPremium').checked;
+            const fileInput = document.getElementById('photoFile');
+            
+            // Create object URL for preview (in real app, upload to server)
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const newPhoto = {
+                        id: photos.length + 1,
+                        title: title,
+                        author: isModerator ? 'Moderator Pro' : currentUser,
+                        src: e.target.result,
+                        premium: isPremium,
+                        authorType: isModerator ? 'moderator' : 'user'
+                    };
+                    photos.unshift(newPhoto);
+                    renderGallery();
+                    uploadForm.reset();
+                    uploadSection.classList.remove('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Render Gallery
+        function renderGallery() {
+            gallery.innerHTML = '';
+            
+            if (photos.length === 0) {
+                gallery.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📷</div>
+                        <h3>No photos yet</h3>
+                        <p>Be the first to upload!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            photos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = `photo-card ${photo.premium ? 'locked' : ''}`;
+                card.innerHTML = `
+                    ${photo.premium ? '<div class="premium-badge">Premium</div>' : ''}
+                    ${photo.premium ? '<div class="lock-icon">🔒</div>' : ''}
+                    <img src="${photo.src}" alt="${photo.title}" class="photo-img">
+                    <div class="photo-overlay">
+                        <div class="photo-title">${photo.title}</div>
+                        <div class="photo-author">by ${photo.author}</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => handlePhotoClick(photo));
+                gallery.appendChild(card);
+            });
+        }
+
+        // Handle Photo Click
+        function handlePhotoClick(photo) {
+            if (photo.premium) {
+                subModal.classList.add('active');
+            } else {
+                // Open full view for free photos (simulated)
+                alert(`📸 ${photo.title}\nBy ${photo.author}\n\nFull resolution view would open here!`);
+            }
+        }
+
+        // Modal Controls
+        closeModal.addEventListener('click', () => {
+            subModal.classList.remove('active');
+        });
+
+        subBtn.addEventListener('click', () => {
+            subModal.classList.add('active');
+        });
+
+        subModal.addEventListener('click', (e) => {
+            if (e.target === subModal) subModal.classList.remove('active');
+        });
+
+        // Payment Simulation
+        payBtn.addEventListener('click', () => {
+            subModal.classList.remove('active');
+            processModal.classList.add('active');
+            
+            setTimeout(() => {
+                processModal.classList.remove('active');
+                alert('✅ Subscription successful! You now have access to all premium content.');
+                // In a real app, this would update user subscription status
+            }, 2000);
+        });
+
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                subModal.classList.remove('active');
+                processModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
